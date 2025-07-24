@@ -163,7 +163,7 @@ func (h *handler) uploadHandler(w http.ResponseWriter, r *http.Request) shttp.Re
 	sizes, err := h.sminioUserClient.UploadAvatar(r.Context(), 321, r, test.KEY)
 	if err.StatusCode > 0 {
 		fmt.Printf("\nerr: \n%v\n", err)
-		return shttp.Result.SetStatusCode(err.StatusCode).SetData(err.Message)
+		return shttp.ResultNew.SetStatusCode(err.StatusCode).SetData(err.Message)
 	}
 	fmt.Printf("avatar size: %d\n", sizes)
 	fmt.Println("avatar uploaded successfully")
@@ -171,7 +171,7 @@ func (h *handler) uploadHandler(w http.ResponseWriter, r *http.Request) shttp.Re
 	sizess, err := h.sminioFeedClient.UploadFeed(r.Context(), 321, r, test.KEY)
 	if err.StatusCode > 0 {
 		fmt.Printf("\nerr: \n%v\n", err)
-		return shttp.Result.SetStatusCode(err.StatusCode).SetData(err.Message)
+		return shttp.ResultNew.SetStatusCode(err.StatusCode).SetData(err.Message)
 	}
 	fmt.Printf("feed size: %d\n", sizess)
 	fmt.Println("feed uploaded successfully")
@@ -179,7 +179,7 @@ func (h *handler) uploadHandler(w http.ResponseWriter, r *http.Request) shttp.Re
 	chatSize, err := h.sminioChatClient.UploadFile(r.Context(), 321, r, test.KEY)
 	if err.StatusCode > 0 {
 		fmt.Printf("\nerr: \n%v\n", err)
-		return shttp.Result.SetStatusCode(err.StatusCode).SetData(err.Message)
+		return shttp.ResultNew.SetStatusCode(err.StatusCode).SetData(err.Message)
 	}
 	fmt.Printf("chat size: %d\n", chatSize)
 	fmt.Println("file uploaded successfully")
@@ -188,7 +188,7 @@ func (h *handler) uploadHandler(w http.ResponseWriter, r *http.Request) shttp.Re
 	msize, err := h.sminioMusicClient.UploadMusicPhoto(r.Context(), 321, musicImagePath)
 	if err.StatusCode > 0 {
 		fmt.Printf("\nerr: \n%v\n", err)
-		return shttp.Result.SetStatusCode(err.StatusCode).SetData(err.Message)
+		return shttp.ResultNew.SetStatusCode(err.StatusCode).SetData(err.Message)
 	}
 	fmt.Printf("music photo size: %d\n", msize)
 	fmt.Println("music photo uploaded successfully")
@@ -197,7 +197,7 @@ func (h *handler) uploadHandler(w http.ResponseWriter, r *http.Request) shttp.Re
 	result, err := h.sminioMusicClient.UploadMusic(r.Context(), 321, musicPath)
 	if err.StatusCode > 0 {
 		fmt.Printf("\nerr: \n%v\n", err)
-		return shttp.Result.SetStatusCode(err.StatusCode).SetData(err.Message)
+		return shttp.ResultNew.SetStatusCode(err.StatusCode).SetData(err.Message)
 	}
 	fmt.Println("music uploaded successfully", result)
 

@@ -3,6 +3,7 @@ package feed
 import (
 	"context"
 	"fmt"
+	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/salamsites/minio-pkg"
 	"github.com/salamsites/minio-pkg/image"
@@ -101,13 +102,12 @@ func (s *Feed) UploadFeed(ctx context.Context, id int64, request *http.Request, 
 				break
 			}
 			img := util.FeedResultTypeImage{
-				Id:   int64(i),
 				Type: mimetype.PrefixImage,
 			}
 			content = append(content, img)
 		case mimetype.PrefixVideo:
 			path := GetFeedPath(id, int64(i))
-			saveError := video.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, util.FeedBucket)
+			_, saveError := video.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, util.FeedBucket)
 			if saveError != nil {
 				isError = true
 				errSave = util.Err{StatusCode: http.StatusBadRequest, Message: "error occured while saving the video"}

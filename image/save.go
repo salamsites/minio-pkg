@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/chai2010/webp"
 	"github.com/disintegration/imaging"
+	"github.com/minio/minio-go/v7"
 	"github.com/salamsites/minio-pkg/mimetype"
 	"github.com/salamsites/minio-pkg/util"
 	"image"

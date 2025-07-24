@@ -3,6 +3,7 @@ package video
 import (
 	"context"
 	"fmt"
+	"github.com/minio/minio-go/v7"
 	"github.com/mowshon/moviego"
 	"github.com/salamsites/minio-pkg/image"
 	"github.com/salamsites/minio-pkg/mimetype"
