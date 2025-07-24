@@ -102,7 +102,9 @@ func (s *Feed) UploadFeed(ctx context.Context, id int64, request *http.Request, 
 				break
 			}
 			img := util.FeedResultTypeImage{
+				Path: path,
 				Type: mimetype.PrefixImage,
+				Mime: mimeTypes[i],
 			}
 			content = append(content, img)
 		case mimetype.PrefixVideo:
