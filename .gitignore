@@ -1,0 +1,16 @@
+.idea
+/.idea
+*/*.DS_Store
+*.DS_Store
+node_modules/
+
+public/
+
+config.yml
+
+*/*.log
+pkg/logging/*.log
+logs/
+test/start
+cmd/main/app
+test/temp

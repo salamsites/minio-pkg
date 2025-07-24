@@ -1,0 +1,276 @@
+//package main
+//
+//import (
+//	"bytes"
+//	"context"
+//	"fmt"
+//	"github.com/minio/minio-go/v7"
+//	"github.com/minio/minio-go/v7/pkg/credentials"
+//	"io"
+//	"log"
+//	"net/http"
+//	"path/filepath"
+//	"time"
+//)
+//
+//const (
+//	endpoint        = "10.192.1.45:9000"
+//	accessKeyID     = "minioadmin"
+//	secretAccessKey = "minioadmin"
+//	bucketName      = "test"
+//)
+//
+//var (
+//	minioClient *minio.Client
+//	redisClient *redis.Client
+//	ctx         = context.Background()
+//)
+//
+//func init() {
+//	var err error
+//	minioClient, err = minio.New(endpoint, &minio.Options{
+//		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+//		Secure: false,
+//	})
+//	if err != nil {
+//		log.Fatalln(err)
+//	}
+//
+//	exists, errBucketExists := minioClient.BucketExists(ctx, bucketName)
+//	if errBucketExists == nil && exists {
+//		fmt.Println("We already own", bucketName)
+//	} else {
+//		err = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
+//		if err != nil {
+//			log.Fatalln(err)
+//		}
+//		fmt.Println("Successfully created", bucketName)
+//	}
+//
+//	// Initialize Redis client
+//	redisClient = redis.NewClient(&redis.Options{
+//		Addr:     "localhost:6379",
+//		Password: "", // no password set
+//		DB:       0,  // use default DB
+//	})
+//}
+//
+//func uploadFile(w http.ResponseWriter, r *http.Request) {
+//	file, handler, err := r.FormFile("file")
+//	if err != nil {
+//		http.Error(w, err.Error(), http.StatusBadRequest)
+//		return
+//	}
+//	defer file.Close()
+//
+//	filePath := "/test/" + handler.Filename
+//	uploadInfo, err := minioClient.PutObject(ctx, bucketName, filePath, file, handler.Size, minio.PutObjectOptions{ContentType: "application/octet-stream"})
+//	if err != nil {
+//		http.Error(w, err.Error(), http.StatusInternalServerError)
+//		return
+//	}
+//
+//	// Remove file from cache after upload
+//	redisClient.Del(ctx, filePath)
+//	fmt.Printf("Uploaded: %v\n", uploadInfo)
+//	fmt.Println("file path: ", filePath)
+//
+//	fmt.Fprintf(w, "Successfully uploaded %s of size %d\n", uploadInfo.Key, uploadInfo.Size)
+//}
+//
+//func getFile(w http.ResponseWriter, r *http.Request) {
+//	filePath := r.URL.Query().Get("file")
+//
+//	// Check cache first
+//	cachedFile, err := redisClient.Get(ctx, filePath).Bytes()
+//	if err == nil {
+//		fmt.Println("Serving from cache")
+//		http.ServeContent(w, r, filePath, time.Now(), bytes.NewReader(cachedFile))
+//		return
+//	}
+//
+//	object, err := minioClient.GetObject(ctx, bucketName, filePath, minio.GetObjectOptions{})
+//	if err != nil {
+//		http.Error(w, err.Error(), http.StatusInternalServerError)
+//		return
+//	}
+//	defer object.Close()
+//
+//	// Read object into memory to serve and cache it
+//	fileBuffer := new(bytes.Buffer)
+//	fileSize, err := io.Copy(fileBuffer, object)
+//	if err != nil {
+//		http.Error(w, err.Error(), http.StatusInternalServerError)
+//		return
+//	}
+//
+//	// Cache the file
+//	err = redisClient.Set(ctx, filePath, fileBuffer.Bytes(), 5*time.Minute).Err()
+//	if err != nil {
+//		http.Error(w, err.Error(), http.StatusInternalServerError)
+//		return
+//	}
+//
+//	// Serve the file
+//	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filepath.Base(filePath)))
+//	w.Header().Set("Content-Type", "application/octet-stream")
+//	w.Header().Set("Content-Length", fmt.Sprintf("%d", fileSize))
+//	io.Copy(w, fileBuffer)
+//}
+//
+//func deleteFile(w http.ResponseWriter, r *http.Request) {
+//	filePath := r.URL.Query().Get("file")
+//	err := minioClient.RemoveObject(ctx, bucketName, filePath, minio.RemoveObjectOptions{})
+//	if err != nil {
+//		http.Error(w, err.Error(), http.StatusInternalServerError)
+//		return
+//	}
+//
+//	// Remove file from cache after deletion
+//	redisClient.Del(ctx, filePath)
+//
+//	fmt.Fprintf(w, "Successfully deleted %s\n", filePath)
+//}
+//
+//func updateFile(w http.ResponseWriter, r *http.Request) {
+//	uploadFile(w, r)
+//}
+//
+//func main() {
+//	http.HandleFunc("/upload", uploadFile)
+//	http.HandleFunc("/get", getFile)
+//	http.HandleFunc("/delete", deleteFile)
+//	http.HandleFunc("/update", updateFile)
+//
+//	log.Println("Server started on :8080")
+//	http.ListenAndServe(":8080", nil)
+//}
+
+/*
+
+avatar (--bucket)
+    user_id (--path)
+        150x150.webp (object)
+        300x300.webp (object)
+        original.webp (object)
+
+
+feed (--bucket)
+    2024 (--path)
+        07 (--path)
+            22 (--path)
+                user_id (--path)
+                    150x150.webp (object)
+                    300x300.webp (object)
+
+
+
+
+
+user_id
+	avatar
+		300x300.webp
+		600x600.webp
+	feed
+		2024
+			07
+				22
+					image
+						id-300x0.webp
+						id-600x0.webp
+						id-300x0.webp
+						id-600x0.webp
+					video
+						id-name.mp4
+						id-name.mp4-300x0.webp
+						id-name.mp4-600x0.webp
+	stories
+		image
+			id-300x0.webp
+			id-600x0.webp
+		video
+			id-name.mp4
+			id-name.mp4-300x0.webp
+			id-name.mp4-600x0.webp
+
+
+
+cdn.salam.tm/avatar/{user_id}/{size}
+cdn.salam.tm/avatar/12345567/300x300
+
+cdn.salam.tm/feed/{user_id}/image/{image_id}/{size}
+cdn.salam.tm/feed/{user_id}/video/{video_id}/original
+cdn.salam.tm/feed/{user_id}/video/{video_id}/preview/{sizes}
+*/
+
+/*
+TODO
+
+2. upload avatar +
+3. upload feed (photo, video)
+4. upload stories (photo, video)
+5. get avatar
+6. get feed (photo, video)
+7. get stories (photo, video)
+
+
+*/
+
+/*
+Avatar
+
+Small (50x50 pixels):
+Quality: 70-80: Since these images are small and often used in contexts where slight quality loss is not noticeable, a lower quality setting helps reduce file size.
+
+Medium (100x100 and 150x150 pixels):
+Quality: 80-90: These images need to be clear enough for user lists and previews. A slightly higher quality preserves details while still keeping file sizes manageable.
+
+Large (300x300 pixels and above):
+Quality: 90-100: For full profile views or detailed avatars, maintaining high quality is important to ensure clarity. Higher settings like 90 or even 100 preserve the most detail.
+Here's a summary of the recommended quality settings for each size:
+
+50x50 pixels: Quality 70-80
+100x100 pixels: Quality 80-90
+150x150 pixels: Quality 80-90
+300x300 pixels: Quality 90-100
+500x500 pixels: Quality 90-100
+
+
+*/
+
+/*
+
+Feed Image Sizes:
+Small (thumbnails in feed, previews):
+
+150x150 pixels: Suitable for small previews or thumbnails in the feed.
+Quality: 70-80: Lower quality settings help reduce file size without significantly impacting the perceived quality at this small size.
+Medium (standard view in feed, grid view):
+
+300x300 pixels: Common size for standard views in the feed or grid views.
+Quality: 80-90: A balance between quality and file size, ensuring the image looks good in the feed.
+Large (detailed view, full screen):
+
+600x600 pixels: For detailed views or when the image is displayed in a larger context.
+Quality: 90-100: Higher quality settings preserve details for detailed or full-screen views.
+Extra Large (high-resolution displays, desktop):
+
+1080x1080 pixels: For high-resolution displays or when the image is viewed on a larger screen like a desktop.
+Quality: 90-100: Maintain high quality for clarity on larger screens.
+
+Summary of Recommended Feed Image Sizes and Quality:
+150x150 pixels:
+
+Quality: 70-80
+300x300 pixels:
+
+Quality: 80-90
+600x600 pixels:
+
+Quality: 90-100
+1080x1080 pixels:
+
+Quality: 90-100
+
+
+*/
