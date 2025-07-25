@@ -25,7 +25,7 @@ type MusicClient interface {
 }
 
 type FeedClient interface {
-	UploadFeed(ctx context.Context, id int64, request *http.Request, key string) (util.Media, util.Err)
+	UploadFeed(ctx context.Context, userid, feedId int64, request *http.Request, key string) (util.Media, util.Err)
 	//RemoveFeed(ctx context.Context) error
 	//
 	//UploadStories(ctx context.Context) error

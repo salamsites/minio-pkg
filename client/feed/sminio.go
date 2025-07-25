@@ -30,7 +30,7 @@ func NewFeedClient(options sminio.Options) (sminio.FeedClient, error) {
 	return &Feed{client: client, tempDir: options.TempDir}, nil
 }
 
-func (s *Feed) UploadFeed(ctx context.Context, id int64, request *http.Request, key string) (util.Media, util.Err) {
+func (s *Feed) UploadFeed(ctx context.Context, userid, feedId int64, request *http.Request, key string) (util.Media, util.Err) {
 	fmt.Printf("\n")
 	fmt.Println("UploadFeed")
 	result := util.Media{}
@@ -94,7 +94,7 @@ func (s *Feed) UploadFeed(ctx context.Context, id int64, request *http.Request, 
 		prefix, _ := mimetype.GetPrefixExt(mimeTypes[i])
 		switch prefix {
 		case mimetype.PrefixImage:
-			path := GetFeedPath(id, int64(i))
+			path := GetFeedPath(userid, feedId, mimetype.PrefixImage, int64(i))
 			saveError := image.Save(ctx, s.client, mimeTypes[i], file, Size, path, util.FeedBucket)
 			if saveError != nil {
 				isError = true
@@ -108,7 +108,7 @@ func (s *Feed) UploadFeed(ctx context.Context, id int64, request *http.Request, 
 			}
 			content = append(content, img)
 		case mimetype.PrefixVideo:
-			path := GetFeedPath(id, int64(i))
+			path := GetFeedPath(userid, feedId, mimetype.PrefixVideo, int64(i))
 			_, saveError := video.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, util.FeedBucket)
 			if saveError != nil {
 				isError = true
