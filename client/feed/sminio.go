@@ -109,15 +109,20 @@ func (s *Feed) UploadFeed(ctx context.Context, userid, feedId int64, request *ht
 			content = append(content, img)
 		case mimetype.PrefixVideo:
 			path := GetFeedPath(userid, feedId, mimetype.PrefixVideo, int64(i))
-			_, saveError := video.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, util.FeedBucket)
+			duration, saveError := video.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, util.FeedBucket)
 			if saveError != nil {
 				isError = true
 				errSave = util.Err{StatusCode: http.StatusBadRequest, Message: "error occured while saving the video"}
 				break
 			}
 
-			img := util.FeedResultTypeVideo{}
-			content = append(content, img)
+			video := util.FeedResultTypeVideo{
+				Path:     path,
+				Type:     mimetype.PrefixVideo,
+				Duration: duration,
+				Mime:     mimeTypes[i],
+			}
+			content = append(content, video)
 			break
 		}
 
