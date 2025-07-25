@@ -13,14 +13,18 @@ import (
 	"os"
 )
 
-func Save(ctx context.Context, client *minio.Client, mimeType string, file multipart.File, fileName string, sizes []util.Size, path, bucketName string) (int64, error) {
+func Save(ctx context.Context, client *minio.Client, tempDir string, mimeType string, file multipart.File, fileName string, sizes []util.Size, path, bucketName string) (int64, error) {
 	fmt.Println("UploadFeed Save Video")
 
 	_, err := file.Seek(0, io.SeekStart)
 	if err != nil {
 		return 0, err
 	}
-	tempDir := os.TempDir()
+
+	// create temp
+	tempDir = os.TempDir()
+
+	//tempDir := "/Users/meylis/Documents/salam-messenger/backend/pkg/sminio/test/temp"
 	originalFilePath, compressedFilePath, err := createTempFile(tempDir, file, fileName)
 	if err != nil {
 		return 0, err
