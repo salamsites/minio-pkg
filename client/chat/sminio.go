@@ -34,7 +34,7 @@ func NewChatClient(options sminio.Options) (sminio.ChatClient, error) {
 
 func (s *Chat) UploadFile(ctx context.Context, roomId int64, request *http.Request, key string) (util.Media, util.Err) {
 	fmt.Printf("\n")
-	fmt.Println("UploadFile chat")
+	fmt.Println("UploadFile")
 	result := util.Media{}
 	err := util.Validate(request, key, 50<<20, 10)
 	if err.StatusCode > 0 {
