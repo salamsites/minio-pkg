@@ -30,8 +30,8 @@ func TestSetMimeTypeAll(t *testing.T) {
 
 	files := []string{
 		//pwd + "/test_files/2.jpg",
-		pwd + "/test_files/123.mp3",
-		//pwd + "/test_files/ALGEBRA_10.pdf",
+		//pwd + "/test_files/123.mp3",
+		pwd + "/test_files/ALGEBRA_10.pdf",
 		//pwd + "/test_files/4955.pdf",
 		//pwd + "/test_files/1.HEIC",
 		//pwd + "/test_files/873.tiff",

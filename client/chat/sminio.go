@@ -101,7 +101,7 @@ func (s *Chat) UploadFile(ctx context.Context, roomId int64, request *http.Reque
 		path := GetPath(folderName, int64(i))
 		switch prefix {
 		case mimetype.PrefixImage:
-			saveError := image.Save(ctx, s.client, mimeTypes[i], file, Size, path, util.ChatBucket)
+			saveError := image.Save(ctx, s.client, mimeTypes[i], file, Size, path, util.FileBucket)
 			if saveError != nil {
 				isError = true
 				errSave = util.Err{StatusCode: http.StatusBadRequest, Message: "error occurred while saving the image"}
@@ -114,7 +114,7 @@ func (s *Chat) UploadFile(ctx context.Context, roomId int64, request *http.Reque
 			}
 			content = append(content, img)
 		case mimetype.PrefixVideo:
-			duration, saveError := video.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, util.ChatBucket)
+			duration, saveError := video.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, util.FileBucket)
 			if saveError != nil {
 				isError = true
 				errSave = util.Err{StatusCode: http.StatusBadRequest, Message: "error occurred while saving the video"}
@@ -133,7 +133,7 @@ func (s *Chat) UploadFile(ctx context.Context, roomId int64, request *http.Reque
 			fmt.Println(fmt.Sprintf("%d sec", duration))
 			break
 		case mimetype.PrefixAudio:
-			duration, saveError := audio.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, util.ChatBucket)
+			duration, saveError := audio.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, util.FileBucket)
 			if saveError != nil {
 				isError = true
 				errSave = util.Err{StatusCode: http.StatusBadRequest, Message: "error occurred while saving the audio"}
@@ -153,7 +153,7 @@ func (s *Chat) UploadFile(ctx context.Context, roomId int64, request *http.Reque
 			break
 
 		default:
-			saveError := SaveFile(ctx, s.client, mimeTypes[i], file, mime, path, util.ChatBucket)
+			saveError := SaveFile(ctx, s.client, mimeTypes[i], file, mime, path, util.FileBucket)
 			if saveError != nil {
 				isError = true
 				errSave = util.Err{StatusCode: http.StatusBadRequest, Message: "error occurred while saving the file"}

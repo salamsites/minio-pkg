@@ -8,6 +8,7 @@ import (
 	"github.com/salamsites/minio-pkg/util"
 	"io"
 	"mime/multipart"
+	"os"
 )
 
 func Save(ctx context.Context, client *minio.Client, tempDir string, mimeType string, file multipart.File, fileName string, sizes []util.Size, path, bucketName string) (int64, error) {
@@ -17,9 +18,9 @@ func Save(ctx context.Context, client *minio.Client, tempDir string, mimeType st
 	if err != nil {
 		return 0, err
 	}
-
+	tempDir = os.TempDir()
 	// create temp
-	//tempDir := "/Users/meylis/Documents/salam-messenger/backend/pkg/sminio/test/temp"
+	//tempDir = "/home/admin01/GolangProjects/autotm-pkg/minio_pkg/test/temp"
 	originalFilePath, err := createTempFile(tempDir, file, fileName)
 	if err != nil {
 		return 0, err

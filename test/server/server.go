@@ -46,27 +46,27 @@ func main() {
 	//})
 
 	sminioUserClient, err := user.NewUserClient(sminio.Options{
-		Endpoint:        "10.192.1.115:9000",
-		AccessKeyID:     "admin",
-		SecretAccessKey: "password",
+		Endpoint:        "10.192.1.127:9000",
+		AccessKeyID:     "minioadmin",
+		SecretAccessKey: "minioadmin",
 	})
 
 	sminioFeedClient, err := feed.NewFeedClient(sminio.Options{
-		Endpoint:        "10.192.1.115:9000",
-		AccessKeyID:     "admin",
-		SecretAccessKey: "password",
+		Endpoint:        "10.192.1.127:9000",
+		AccessKeyID:     "minioadmin",
+		SecretAccessKey: "minioadmin",
 	})
 
 	sminioMusicClient, err := music.NewMusicClient(sminio.Options{
-		Endpoint:        "10.192.1.115:9000",
-		AccessKeyID:     "admin",
-		SecretAccessKey: "password",
+		Endpoint:        "10.192.1.127:9000",
+		AccessKeyID:     "minioadmin",
+		SecretAccessKey: "minioadmin",
 	})
 
 	sminioChatClient, err := sminiochat.NewChatClient(sminio.Options{
-		Endpoint:        "10.192.1.115:9000",
-		AccessKeyID:     "admin",
-		SecretAccessKey: "password",
+		Endpoint:        "10.192.1.127:9000",
+		AccessKeyID:     "minioadmin",
+		SecretAccessKey: "minioadmin",
 	})
 	// Create a server
 	srv := &http.Server{
@@ -168,7 +168,7 @@ func (h *handler) uploadHandler(w http.ResponseWriter, r *http.Request) shttp.Re
 	fmt.Printf("avatar size: %d\n", sizes)
 	fmt.Println("avatar uploaded successfully")
 
-	sizess, err := h.sminioFeedClient.UploadFeed(r.Context(), 321, r, test.KEY)
+	sizess, err := h.sminioFeedClient.UploadFeed(r.Context(), 321, 321, r, test.KEY)
 	if err.StatusCode > 0 {
 		fmt.Printf("\nerr: \n%v\n", err)
 		return shttp.ResultNew.SetStatusCode(err.StatusCode).SetData(err.Message)
