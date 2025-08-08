@@ -62,7 +62,7 @@ func main() {
 		SecretAccessKey: "minioadmin",
 	})
 
-	sminioChatClient, err := sminiochat.NewChatClient(sminio.Options{
+	sminioChatClient, err := sminiochat.NewFileClient(sminio.Options{
 		Endpoint:        "10.192.1.127:9000",
 		AccessKeyID:     "minioadmin",
 		SecretAccessKey: "minioadmin",

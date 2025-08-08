@@ -15,7 +15,7 @@ type User struct {
 	client *minio.Client
 }
 
-func NewUserClient(options sminio.Options) (sminio.ImageClient, error) {
+func NewImageClient(options sminio.Options) (sminio.ImageClient, error) {
 	client, err := minio.New(options.Endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(options.AccessKeyID, options.SecretAccessKey, ""),
 		Secure: false,

@@ -20,7 +20,7 @@ type File struct {
 	tempDir string
 }
 
-func NewChatClient(options sminio.Options) (sminio.FileClient, error) {
+func NewFileClient(options sminio.Options) (sminio.FileClient, error) {
 	client, err := minio.New(options.Endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(options.AccessKeyID, options.SecretAccessKey, ""),
 		Secure: false,
