@@ -32,7 +32,7 @@ func NewFileClient(options sminio.Options) (sminio.FileClient, error) {
 	return &File{client: client, tempDir: options.TempDir}, nil
 }
 
-func (s *File) UploadFile(ctx context.Context, request *http.Request, key string, path []string, Size []util.Size, buckedName string) (util.Media, util.Err) {
+func (s *File) UploadFile(ctx context.Context, request *http.Request, key string, id int64, Size []util.Size, buckedName string) (util.Media, util.Err) {
 	fmt.Printf("\n")
 	fmt.Println("UploadFile")
 	result := util.Media{}
@@ -83,6 +83,7 @@ func (s *File) UploadFile(ctx context.Context, request *http.Request, key string
 
 	var content []interface{}
 	for i := range files {
+		path := GetPathByTime(id)
 		if isError {
 			break
 		}
@@ -99,20 +100,20 @@ func (s *File) UploadFile(ctx context.Context, request *http.Request, key string
 
 		switch prefix {
 		case mimetype.PrefixImage:
-			saveError := image.Save(ctx, s.client, mimeTypes[i], file, Size, path[i], buckedName)
+			saveError := image.Save(ctx, s.client, mimeTypes[i], file, Size, path, buckedName)
 			if saveError != nil {
 				isError = true
 				errSave = util.Err{StatusCode: http.StatusBadRequest, Message: "error occurred while saving the image"}
 				break
 			}
 			img := util.FeedResultTypeImage{
-				Path: path[i],
+				Path: path,
 				Type: mimetype.PrefixImage,
 				Mime: ".webp",
 			}
 			content = append(content, img)
 		case mimetype.PrefixVideo:
-			duration, saveError := video.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path[i], buckedName)
+			duration, saveError := video.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, buckedName)
 			if saveError != nil {
 				isError = true
 				errSave = util.Err{StatusCode: http.StatusBadRequest, Message: "error occurred while saving the video"}
@@ -122,7 +123,7 @@ func (s *File) UploadFile(ctx context.Context, request *http.Request, key string
 			ex := filepath.Ext(files[i].Filename)
 
 			img := util.FeedResultTypeVideo{
-				Path:     path[i],
+				Path:     path,
 				Type:     mimetype.PrefixVideo,
 				Duration: duration,
 				Mime:     ex,
@@ -131,7 +132,7 @@ func (s *File) UploadFile(ctx context.Context, request *http.Request, key string
 			fmt.Println(fmt.Sprintf("%d sec", duration))
 			break
 		case mimetype.PrefixAudio:
-			duration, saveError := audio.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path[i], buckedName)
+			duration, saveError := audio.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, buckedName)
 			if saveError != nil {
 				isError = true
 				errSave = util.Err{StatusCode: http.StatusBadRequest, Message: "error occurred while saving the audio"}
@@ -141,7 +142,7 @@ func (s *File) UploadFile(ctx context.Context, request *http.Request, key string
 			ex := filepath.Ext(files[i].Filename)
 
 			img := util.FeedResultTypeAudio{
-				Path:     path[i],
+				Path:     path,
 				Type:     mimetype.PrefixAudio,
 				Duration: duration,
 				Mime:     ex,
@@ -151,7 +152,7 @@ func (s *File) UploadFile(ctx context.Context, request *http.Request, key string
 			break
 
 		default:
-			saveError := SaveFile(ctx, s.client, mimeTypes[i], file, mime, path[i], buckedName)
+			saveError := SaveFile(ctx, s.client, mimeTypes[i], file, mime, path, buckedName)
 			if saveError != nil {
 				isError = true
 				errSave = util.Err{StatusCode: http.StatusBadRequest, Message: "error occurred while saving the file"}
@@ -160,7 +161,7 @@ func (s *File) UploadFile(ctx context.Context, request *http.Request, key string
 			ex := filepath.Ext(files[i].Filename)
 
 			img := util.FeedResultTypeFile{
-				Path:     path[i],
+				Path:     path,
 				Type:     mimetype.PrefixFile,
 				FileSize: files[i].Size,
 				Mime:     ex,
