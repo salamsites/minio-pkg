@@ -10,7 +10,7 @@ import (
 //	ChatClient  files.Chat
 //	MusicClient music.Music
 //	FeedClient  feed.Feed
-//	UserClient  user.User
+//	UserClient  image.User
 //}
 
 type ImageClient interface {
@@ -32,5 +32,5 @@ type FeedClient interface {
 }
 
 type FileClient interface {
-	UploadFile(ctx context.Context, request *http.Request, key, path string, Size []util.Size, buckedName string) (util.Media, util.Err)
+	UploadFile(ctx context.Context, request *http.Request, key string, path []string, Size []util.Size, buckedName string) (util.Media, util.Err)
 }

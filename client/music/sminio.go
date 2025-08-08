@@ -90,7 +90,7 @@ func (s *Music) UploadMusic(ctx context.Context, id int64, localDir string) (str
 	fmt.Println("")
 	fmt.Printf("upload music in------")
 	path := GetMusicPath(id)
-	//localDir := "/home/user/Videos/Receive"
+	//localDir := "/home/image/Videos/Receive"
 	saveError := Save(ctx, s.client, localDir, path, util.MusicPhotoBucket)
 	if saveError != nil {
 		return "", util.Err{StatusCode: http.StatusBadRequest, Message: "error occurred while saving the music"}

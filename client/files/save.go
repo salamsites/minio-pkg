@@ -15,7 +15,7 @@ func SaveFile(ctx context.Context, client *minio.Client, mimeType string, file m
 		return err
 	}
 
-	//tempDir := "/home/user/sallamm/sminio/test/temp"
+	//tempDir := "/home/image/sallamm/sminio/test/temp"
 	//tempFile, err := os.CreateTemp(tempDir, "upload-*.tmp")
 	//if err != nil {
 	//	return fmt.Errorf("создание временного файла: %w", err)

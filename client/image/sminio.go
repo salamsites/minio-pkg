@@ -1,4 +1,4 @@
-package user
+package image
 
 import (
 	"context"
@@ -27,7 +27,7 @@ func NewUserClient(options sminio.Options) (sminio.ImageClient, error) {
 	return &User{client: client}, nil
 }
 
-// RemoveUser id - user id
+// RemoveUser id - image id
 
 // UploadAvatar
 // Err{StatusCode: http.StatusRequestEntityTooLarge, Message: "files is to large"}

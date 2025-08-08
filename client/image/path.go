@@ -1,4 +1,4 @@
-package user
+package image
 
 import "fmt"
 

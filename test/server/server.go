@@ -8,7 +8,6 @@ import (
 	"github.com/salamsites/minio-pkg/client/feed"
 	sminiochat "github.com/salamsites/minio-pkg/client/files"
 	"github.com/salamsites/minio-pkg/client/music"
-	"github.com/salamsites/minio-pkg/client/user"
 	"github.com/salamsites/minio-pkg/test"
 	shttp "github.com/salamsites/package-http"
 	slog "github.com/salamsites/package-log"
