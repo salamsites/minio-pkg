@@ -7,16 +7,15 @@ import (
 )
 
 //type Some struct {
-//	ChatClient  chat.Chat
+//	ChatClient  files.Chat
 //	MusicClient music.Music
 //	FeedClient  feed.Feed
 //	UserClient  user.User
 //}
 
-type UserClient interface {
-	RemoveUser(ctx context.Context, id int64) error
-	UploadAvatar(ctx context.Context, id int64, request *http.Request, key string) ([]util.Size, util.Err)
-	RemoveAvatar(ctx context.Context, id int64) error
+type ImageClient interface {
+	UploadImage(ctx context.Context, request *http.Request, key, path string, Size []util.Size, buckedName string) util.Err
+	RemoveImage(ctx context.Context, path, buckedName string) error
 }
 
 type MusicClient interface {
@@ -32,6 +31,6 @@ type FeedClient interface {
 	//RemoveStories(ctx context.Context) error
 }
 
-type ChatClient interface {
-	UploadFile(ctx context.Context, id int64, request *http.Request, key string) (util.Media, util.Err)
+type FileClient interface {
+	UploadFile(ctx context.Context, request *http.Request, key, path string, Size []util.Size, buckedName string) (util.Media, util.Err)
 }

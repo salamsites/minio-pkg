@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/salamsites/minio-pkg"
-	sminiochat "github.com/salamsites/minio-pkg/client/chat"
 	"github.com/salamsites/minio-pkg/client/feed"
+	sminiochat "github.com/salamsites/minio-pkg/client/files"
 	"github.com/salamsites/minio-pkg/client/music"
 	"github.com/salamsites/minio-pkg/client/user"
 	"github.com/salamsites/minio-pkg/test"
@@ -120,7 +120,7 @@ func main() {
 
 }
 
-func getRouter(cancel context.CancelFunc, sminioUserClient sminio.UserClient, sminioFeedClient sminio.FeedClient, sminioMusicClient sminio.MusicClient, sminioChatClient sminio.ChatClient, logger *slog.Logger, pwd string) *mux.Router {
+func getRouter(cancel context.CancelFunc, sminioUserClient sminio.ImageClient, sminioFeedClient sminio.FeedClient, sminioMusicClient sminio.MusicClient, sminioChatClient sminio.ChatClient, logger *slog.Logger, pwd string) *mux.Router {
 
 	router := mux.NewRouter()
 
@@ -147,10 +147,10 @@ type handler struct {
 	logger            *slog.Logger
 	middleware        *shttp.Middleware
 	pwd               string
-	sminioUserClient  sminio.UserClient
+	sminioUserClient  sminio.ImageClient
 	sminioFeedClient  sminio.FeedClient
 	sminioMusicClient sminio.MusicClient
-	sminioChatClient  sminio.ChatClient
+	sminioChatClient  sminio.FileClient
 }
 
 func (h *handler) Register(router *mux.Router) {
@@ -160,7 +160,7 @@ func (h *handler) Register(router *mux.Router) {
 
 func (h *handler) uploadHandler(w http.ResponseWriter, r *http.Request) shttp.Response {
 	fmt.Println("start uploadHandler\n ")
-	sizes, err := h.sminioUserClient.UploadAvatar(r.Context(), 321, r, test.KEY)
+	sizes, err := h.sminioUserClient.UploadImage(r.Context(), 321, r, test.KEY)
 	if err.StatusCode > 0 {
 		fmt.Printf("\nerr: \n%v\n", err)
 		return shttp.ResultNew.SetStatusCode(err.StatusCode).SetData(err.Message)
@@ -181,7 +181,7 @@ func (h *handler) uploadHandler(w http.ResponseWriter, r *http.Request) shttp.Re
 		fmt.Printf("\nerr: \n%v\n", err)
 		return shttp.ResultNew.SetStatusCode(err.StatusCode).SetData(err.Message)
 	}
-	fmt.Printf("chat size: %d\n", chatSize)
+	fmt.Printf("files size: %d\n", chatSize)
 	fmt.Println("file uploaded successfully")
 
 	var musicImagePath string

@@ -1,4 +1,4 @@
-package sminiochat
+package sminiofiles
 
 import "github.com/salamsites/minio-pkg/util"
 

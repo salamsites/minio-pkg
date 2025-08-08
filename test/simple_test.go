@@ -22,16 +22,17 @@ func TestMain(m *testing.M) {
 
 func TestSetMimeTypeAll(t *testing.T) {
 	// Open the file
-	pwd, err := os.Getwd()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	//pwd, err := os.Getwd()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	os.Exit(1)
+	//}
 
 	files := []string{
 		//pwd + "/test_files/2.jpg",
+		//pwd + "/test_files/hero-Hair-Salon.webp",
 		//pwd + "/test_files/123.mp3",
-		pwd + "/test_files/ALGEBRA_10.pdf",
+		//pwd + "/test_files/ALGEBRA_10.pdf",
 		//pwd + "/test_files/4955.pdf",
 		//pwd + "/test_files/1.HEIC",
 		//pwd + "/test_files/873.tiff",

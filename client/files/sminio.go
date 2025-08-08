@@ -1,4 +1,4 @@
-package sminiochat
+package sminiofiles
 
 import (
 	"context"
@@ -15,12 +15,12 @@ import (
 	"path/filepath"
 )
 
-type Chat struct {
+type File struct {
 	client  *minio.Client
 	tempDir string
 }
 
-func NewChatClient(options sminio.Options) (sminio.ChatClient, error) {
+func NewChatClient(options sminio.Options) (sminio.FileClient, error) {
 	client, err := minio.New(options.Endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(options.AccessKeyID, options.SecretAccessKey, ""),
 		Secure: false,
@@ -29,10 +29,10 @@ func NewChatClient(options sminio.Options) (sminio.ChatClient, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Chat{client: client, tempDir: options.TempDir}, nil
+	return &File{client: client, tempDir: options.TempDir}, nil
 }
 
-func (s *Chat) UploadFile(ctx context.Context, roomId int64, request *http.Request, key string) (util.Media, util.Err) {
+func (s *File) UploadFile(ctx context.Context, request *http.Request, key, path string, Size []util.Size, buckedName string) (util.Media, util.Err) {
 	fmt.Printf("\n")
 	fmt.Println("UploadFile")
 	result := util.Media{}
@@ -82,7 +82,6 @@ func (s *Chat) UploadFile(ctx context.Context, roomId int64, request *http.Reque
 	}
 
 	var content []interface{}
-	folderName := GetPathByTime(roomId)
 	for i := range files {
 		if isError {
 			break
@@ -98,10 +97,9 @@ func (s *Chat) UploadFile(ctx context.Context, roomId int64, request *http.Reque
 		fmt.Println(prefix)
 		fmt.Println(mimeTypes[i])
 
-		path := GetPath(folderName, int64(i))
 		switch prefix {
 		case mimetype.PrefixImage:
-			saveError := image.Save(ctx, s.client, mimeTypes[i], file, Size, path, util.FileBucket)
+			saveError := image.Save(ctx, s.client, mimeTypes[i], file, Size, path, buckedName)
 			if saveError != nil {
 				isError = true
 				errSave = util.Err{StatusCode: http.StatusBadRequest, Message: "error occurred while saving the image"}
@@ -114,7 +112,7 @@ func (s *Chat) UploadFile(ctx context.Context, roomId int64, request *http.Reque
 			}
 			content = append(content, img)
 		case mimetype.PrefixVideo:
-			duration, saveError := video.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, util.FileBucket)
+			duration, saveError := video.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, buckedName)
 			if saveError != nil {
 				isError = true
 				errSave = util.Err{StatusCode: http.StatusBadRequest, Message: "error occurred while saving the video"}
@@ -133,7 +131,7 @@ func (s *Chat) UploadFile(ctx context.Context, roomId int64, request *http.Reque
 			fmt.Println(fmt.Sprintf("%d sec", duration))
 			break
 		case mimetype.PrefixAudio:
-			duration, saveError := audio.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, util.FileBucket)
+			duration, saveError := audio.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, buckedName)
 			if saveError != nil {
 				isError = true
 				errSave = util.Err{StatusCode: http.StatusBadRequest, Message: "error occurred while saving the audio"}
@@ -153,7 +151,7 @@ func (s *Chat) UploadFile(ctx context.Context, roomId int64, request *http.Reque
 			break
 
 		default:
-			saveError := SaveFile(ctx, s.client, mimeTypes[i], file, mime, path, util.FileBucket)
+			saveError := SaveFile(ctx, s.client, mimeTypes[i], file, mime, path, buckedName)
 			if saveError != nil {
 				isError = true
 				errSave = util.Err{StatusCode: http.StatusBadRequest, Message: "error occurred while saving the file"}
@@ -187,7 +185,7 @@ func (s *Chat) UploadFile(ctx context.Context, roomId int64, request *http.Reque
 	return result, util.Err{}
 }
 
-//func (s *chat) UploadFileOld(ctx context.Context, id int64, request *http.Request, key string) (util.Media, util.Err) {
+//func (s *files) UploadFileOld(ctx context.Context, id int64, request *http.Request, key string) (util.Media, util.Err) {
 //	fmt.Printf("\n")
 //	fmt.Println("UploadFile")
 //	result := util.Media{}
