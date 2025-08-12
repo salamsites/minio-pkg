@@ -94,7 +94,7 @@ func (s *Feed) UploadFeed(ctx context.Context, userid, feedId int64, feedType st
 		prefix, _ := mimetype.GetPrefixExt(mimeTypes[i])
 		switch prefix {
 		case mimetype.PrefixImage:
-			path := GetFeedPath(userid, feedType, feedId, mimetype.PrefixImage, int64(i))
+			path := GetFeedPath(userid, feedType, feedId, mimetype.PrefixImage)
 			saveError := image.Save(ctx, s.client, mimeTypes[i], file, Size, path, util.FeedBucket)
 			if saveError != nil {
 				isError = true
@@ -108,7 +108,7 @@ func (s *Feed) UploadFeed(ctx context.Context, userid, feedId int64, feedType st
 			}
 			content = append(content, img)
 		case mimetype.PrefixVideo:
-			path := GetFeedPath(userid, feedType, feedId, mimetype.PrefixVideo, int64(i))
+			path := GetFeedPath(userid, feedType, feedId, mimetype.PrefixVideo)
 			duration, saveError := video.Save(ctx, s.client, s.tempDir, mimeTypes[i], file, files[i].Filename, Size, path, util.FeedBucket)
 			if saveError != nil {
 				isError = true
