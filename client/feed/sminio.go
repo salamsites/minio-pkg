@@ -30,7 +30,7 @@ func NewFeedClient(options sminio.Options) (sminio.FeedClient, error) {
 	return &Feed{client: client, tempDir: options.TempDir}, nil
 }
 
-func (s *Feed) UploadFeed(ctx context.Context, userid, feedId int64, feedType string, request *http.Request, key string) (util.Media, util.Err) {
+func (s *Feed) UploadFeed(ctx context.Context, userid, feedId int64, feedType string, request *http.Request, key string, Size []util.Size) (util.Media, util.Err) {
 	fmt.Printf("\n")
 	fmt.Println("UploadFeed")
 	result := util.Media{}
