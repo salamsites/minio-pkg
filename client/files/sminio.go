@@ -186,6 +186,25 @@ func (s *File) UploadFile(ctx context.Context, request *http.Request, key string
 	return result, util.Err{}
 }
 
+func (s *File) RemoveFile(ctx context.Context, path, buckedName string) error {
+	objectCh := s.client.ListObjects(ctx, buckedName, minio.ListObjectsOptions{
+		Prefix:    path,
+		Recursive: true,
+	})
+
+	for object := range objectCh {
+		if object.Err != nil {
+			return object.Err
+		}
+		err := s.client.RemoveObject(ctx, buckedName, object.Key, minio.RemoveObjectOptions{})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 //func (s *files) UploadFileOld(ctx context.Context, id int64, request *http.Request, key string) (util.Media, util.Err) {
 //	fmt.Printf("\n")
 //	fmt.Println("UploadFile")

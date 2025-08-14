@@ -33,4 +33,5 @@ type FeedClient interface {
 
 type FileClient interface {
 	UploadFile(ctx context.Context, request *http.Request, key string, id int64, Size []util.Size, buckedName string) (util.Media, util.Err)
+	RemoveFile(ctx context.Context, path, buckedName string) error
 }
