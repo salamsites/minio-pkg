@@ -141,3 +141,22 @@ func (s *Feed) UploadFeed(ctx context.Context, userid, feedId int64, feedType st
 	result.Content = content
 	return result, util.Err{}
 }
+
+func (s *Feed) RemoveFeed(ctx context.Context, path, buckedName string) error {
+	objectCh := s.client.ListObjects(ctx, buckedName, minio.ListObjectsOptions{
+		Prefix:    path,
+		Recursive: true,
+	})
+
+	for object := range objectCh {
+		if object.Err != nil {
+			return object.Err
+		}
+		err := s.client.RemoveObject(ctx, buckedName, object.Key, minio.RemoveObjectOptions{})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
